@@ -97,7 +97,6 @@
   É o software pronto para uso, acessado via internet. O provedor cuida de tudo.  
   👉 *Exemplo:* Gmail, Microsoft 365, Dropbox.
 
-Beleza! Aqui vai uma **tabela comparativa** com um pouco mais de detalhe, mas ainda de forma clara:
 
 | **Modelo** | **O que é?** | **Responsável pelo quê?** | **Exemplos** |
 |------------|--------------|----------------------------|--------------|
