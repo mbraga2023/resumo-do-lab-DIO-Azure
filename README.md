@@ -87,15 +87,12 @@
 
 - **IaaS (Infrastructure as a Service)**:  
   Fornece infraestrutura de TI básica como servidores, redes, armazenamento e máquinas virtuais. Você gerencia o sistema operacional, aplicativos e dados.  
-  👉 *Exemplo:* Amazon EC2, Microsoft Azure VM.
 
 - **PaaS (Platform as a Service)**:  
   Oferece uma plataforma pronta para desenvolvimento, onde você só se preocupa com o código. A infraestrutura e o sistema operacional são gerenciados pelo provedor.  
-  👉 *Exemplo:* Google App Engine, Heroku.
 
 - **SaaS (Software as a Service)**:  
   É o software pronto para uso, acessado via internet. O provedor cuida de tudo.  
-  👉 *Exemplo:* Gmail, Microsoft 365, Dropbox.
 
 
 | **Modelo** | **O que é?** | **Responsável pelo quê?** | **Exemplos** |
