@@ -1,0 +1,3 @@
+Como está a tendência mensal de vendas (em USD)?
+→ Evolução das vendas mês a mês, normalizando todas as receitas para dólares.
+(Script: export_monthly_trend_usd.py)

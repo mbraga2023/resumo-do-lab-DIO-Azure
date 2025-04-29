@@ -1,0 +1,3 @@
+Quais produtos são mais lucrativos em cada plataforma?
+→ Receita total por produto em cada site (AliExpress, Etsy, Shopee).
+(Script: export_revenue_by_platform.py)

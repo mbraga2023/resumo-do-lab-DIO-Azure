@@ -1,0 +1,3 @@
+Quais países usam mais cupons e economizam mais?
+→ Quantidade de pedidos com desconto, valor total e médio economizado por país.
+(Script: export_discounts_by_country.py)

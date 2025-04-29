@@ -1,0 +1,3 @@
+Qual o desempenho de vendas por produto?
+→ Total de unidades vendidas, receita gerada e preço médio por item.
+(Script: export_summary_by_product.py)
