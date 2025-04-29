@@ -48,11 +48,11 @@ Este projeto realiza uma análise completa das vendas dos produtos **Meganium** 
 
 2. Execute qualquer script desejado:
    ```bash
-python scripts/export_summary_by_product.py
+   python scripts/export_summary_by_product.py
 
 3. Os arquivos Excel gerados ficarão disponíveis na pasta:
    ```bash
-data/processed_data/
+   data/processed_data/
 
 ---
 
