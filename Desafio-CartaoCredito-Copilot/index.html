@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de Cartão de Crédito</title>
+</head>
+
+<body>
+    <!-- First Div: Card Flags Selection -->
+    <div id="card-flags-container">
+        <h2>Selecione a Bandeira do Cartão</h2>
+        <div id="card-flags">
+            <div class="card-flag" onclick="selectCardFlag('visa')">
+                <img src="default-img.jpg" alt="Visa">
+                <p>Visa</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('mastercard')">
+                <img src="default-img.jpg" alt="MasterCard">
+                <p>MasterCard</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('amex')">
+                <img src="default-img.jpg" alt="American Express">
+                <p>American Express</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('elo')">
+                <img src="default-img.jpg" alt="Elo">
+                <p>Elo</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('hipercard')">
+                <img src="default-img.jpg" alt="Hipercard">
+                <p>Hipercard</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('diners')">
+                <img src="default-img.jpg" alt="Diners Club">
+                <p>Diners Club</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('discover')">
+                <img src="default-img.jpg" alt="Discover">
+                <p>Discover</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('jcb')">
+                <img src="default-img.jpg" alt="JCB">
+                <p>JCB</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('aura')">
+                <img src="default-img.jpg" alt="Aura">
+                <p>Aura</p>
+            </div>
+            <div class="card-flag" onclick="selectCardFlag('maestro')">
+                <img src="default-img.jpg" alt="Maestro">
+                <p>Maestro</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add a hidden input to store the selected card flag -->
+    <input type="hidden" id="card-flag" value="">
+
+    <!-- Second Div: Input for Card Number and Validation -->
+    <div id="card-validation">
+        <h2>Validação do Cartão</h2>
+        <label for="card-number">Número do Cartão:</label>
+        <input type="text" id="card-number" placeholder="Digite o número do cartão">
+
+        <label for="expiration-date">Data de Validade (MM/AA):</label>
+        <input type="text" id="expiration-date" placeholder="MM/AA">
+
+        <label for="cvv-code">Código de Segurança (CVV):</label>
+        <input type="text" id="cvv-code" placeholder="CVV">
+
+        <button onclick="validateCard()">Validar Cartão</button>
+        <div id="validation-result"></div>
+    </div>
+
+
+    <script>
+        function selectCardFlag(flag) {
+            // Store the selected card flag in the hidden input
+            document.getElementById('card-flag').value = flag;
+
+            // Remove the 'selected' class from all card flags
+            const cardFlags = document.querySelectorAll('.card-flag');
+            cardFlags.forEach(flagElement => flagElement.classList.remove('selected'));
+
+            // Add the 'selected' class to the clicked card flag
+            const selectedFlag = document.querySelector(`.card-flag[onclick="selectCardFlag('${flag}')"]`);
+            if (selectedFlag) {
+                selectedFlag.classList.add('selected');
+            }
+        }
+
+        function validateCard() {
+            const cardNumber = document.getElementById('card-number').value.replace(/\D/g, '');
+            const expirationDate = document.getElementById('expiration-date').value;
+            const cvvCode = document.getElementById('cvv-code').value;
+            const cardFlag = document.getElementById('card-flag').value;
+            const validationResult = document.getElementById('validation-result');
+
+            // Reset validation result
+            validationResult.style.display = 'none';
+            validationResult.className = '';
+
+            // Check if a card flag is selected
+            if (!cardFlag) {
+                validationResult.textContent = "Por favor, selecione uma bandeira do cartão.";
+                validationResult.className = 'invalid';
+                validationResult.style.display = 'block';
+                return;
+            }
+
+            // Validate card number based on card flag rules
+            if (!validateCardNumber(cardNumber, cardFlag)) {
+                validationResult.textContent = "Número de cartão inválido para a bandeira selecionada.";
+                validationResult.className = 'invalid';
+                validationResult.style.display = 'block';
+                return;
+            }
+
+            // Validate card number using Luhn algorithm
+            if (!isValidLuhn(cardNumber)) {
+                validationResult.textContent = "O número do cartão é inválido.";
+                validationResult.className = 'invalid';
+                validationResult.style.display = 'block';
+                return;
+            }
+
+            // Validate expiration date
+            if (!validateExpirationDate(expirationDate)) {
+                validationResult.textContent = "Data de validade inválida.";
+                validationResult.className = 'invalid';
+                validationResult.style.display = 'block';
+                return;
+            }
+
+            // Validate CVV
+            if (!/^\d{3,4}$/.test(cvvCode)) {
+                validationResult.textContent = "Código de segurança inválido.";
+                validationResult.className = 'invalid';
+                validationResult.style.display = 'block';
+                return;
+            }
+
+            // Final validation result
+            validationResult.textContent = "O cartão é válido!";
+            validationResult.className = 'valid';
+            validationResult.style.display = 'block';
+        }
+
+        // Validate card number based on card flag rules
+        function validateCardNumber(cardNumber, cardFlag) {
+            const rules = {
+                visa: { prefix: /^4/, lengths: [13, 16, 19] },
+                mastercard: { prefix: /^(5[1-5]|222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/, lengths: [16] },
+                amex: { prefix: /^(34|37)/, lengths: [15] },
+                elo: { prefix: /^(4011|4389|4576|6277|6362)/, lengths: [16] },
+                hipercard: { prefix: /^(3841|60|6062|6370)/, lengths: [13, 16, 19] },
+                diners: { prefix: /^(300|301|302|303|304|305|36|38|39)/, lengths: [14] },
+                discover: { prefix: /^(6011|622(12[6-9]|1[3-9]\d|[2-8]\d{2}|9[01]\d|92[0-5])|64[4-9]|65)/, lengths: [16, 19] },
+                jcb: { prefix: /^(352[8-9]|35[3-8]\d)/, lengths: [16, 19] },
+                aura: { prefix: /^50/, lengths: [16] },
+                maestro: { prefix: /^(5018|5020|5038|5893|6304|6759|676[1-3])/, lengths: [12, 19] },
+            };
+
+            const rule = rules[cardFlag];
+            if (!rule) return false;
+
+            return rule.prefix.test(cardNumber) && rule.lengths.includes(cardNumber.length);
+        }
+
+        // Luhn algorithm for card number validation
+        function isValidLuhn(cardNumber) {
+            let sum = 0;
+            let shouldDouble = false;
+
+            for (let i = cardNumber.length - 1; i >= 0; i--) {
+                let digit = parseInt(cardNumber[i]);
+
+                if (shouldDouble) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }
+
+            return sum % 10 === 0;
+        }
+
+        // Validate Expiration Date (MM/YY)
+        function validateExpirationDate(date) {
+            const [month, year] = date.split('/').map(Number);
+            if (!month || !year || month < 1 || month > 12) return false;
+
+            const currentDate = new Date();
+            const currentYear = parseInt(currentDate.getFullYear().toString().slice(-2));
+            const currentMonth = currentDate.getMonth() + 1;
+
+            return year > currentYear || (year === currentYear && month >= currentMonth);
+        }
+    </script>
+
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        /* Card Flags Container */
+        #card-flags-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        #card-flags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .card-flag {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            width: 80px;
+            text-align: center;
+            transition: background-color 0.3s, border-color 0.3s;
+            background-color: #fff;
+        }
+
+        .card-flag img {
+            width: 50px;
+            height: 30px;
+            margin-bottom: 5px;
+        }
+
+        .card-flag:hover {
+            background-color: #f0f0f0;
+        }
+
+        .card-flag.selected {
+            background-color: #d1e7dd;
+            border-color: #0f5132;
+        }
+
+        /* Card Validation Section */
+        #card-validation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 400px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #card-validation h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        #card-validation label {
+            align-self: flex-start;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        #card-validation input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #card-validation button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #card-validation button:hover {
+            background-color: #0056b3;
+        }
+
+        #validation-result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1rem;
+            display: none;
+            /* Hidden by default */
+        }
+
+        #validation-result.valid {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #validation-result.invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Footer Styling */
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #777;
+        }
+    </style>
+</body>
+
+</html>
